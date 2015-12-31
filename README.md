@@ -3,6 +3,7 @@ R Package for Image Recogntion using the Project Oxford API
 
 See the the R/shiny [demo](https://flovv.shinyapps.io/image-shiny)
 
+and [blog post](http://flovv.github.io/Image-Recognition/)
 
 ## Install
 ```
@@ -21,7 +22,7 @@ install_github("flovv/Roxford")
 ## Usage
 Every API (Face, Emotion, Vision, Video, ...) has a seperate API key. Hence, to use different functions you need to provide the "correct" key.
 
-
+### Face detection & facial features
 ```
 require(Roxford)
 facekey = ''   #look it up on your subscription site
@@ -42,7 +43,7 @@ getEmotionResponse("out/snap00169.png", emotionkey)
 getEmotionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", emotionKey)
 ```
 
-### Image obejct recognition 
+### Object recognition/classification 
 ```
 visionkey = '' # different key
 getVisionResponse("out/snap00169.png", visionkey)
