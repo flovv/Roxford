@@ -16,3 +16,4 @@ install_github("flovv/Roxford")
 * sign in
 * go to account settings --> my subscriptions
 
+![Subsciptions page](https://raw.githubusercontent.com/flovv/Roxford/master/oxford.jpg)
