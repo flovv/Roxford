@@ -12,7 +12,7 @@ install_github("flovv/Roxford")
 ```
 
 ## Get API Keys
--Visit (www.projectoxford.ai/)[https://www.projectoxford.ai/]
--sign in
--go to account settings --> my subscriptions
+* Visit (www.projectoxford.ai/)[https://www.projectoxford.ai/]
+* sign in
+* go to account settings --> my subscriptions
 
