@@ -1,0 +1,14 @@
+Package: Roxford
+Title: Access to the project Oxford API for image, video, recogntion and labeling
+Version: 0.0.1.1
+Authors@R: person("Florian", "Teschner", email = "teschner@gmail.com", role = c("aut", "cre"))
+Description: This package is wrapper for the fantastic - free to use - Microsoft project Oxford image/speech/video API.
+Depends:
+    R (>= 3.2.0)
+Imports: 
+	httr,
+	plyr,
+	rjson
+License: GPL (>= 2) | MIT + file LICENSE
+LazyData: true
+RoxygenNote: 5.0.1.9000
