@@ -5,12 +5,12 @@ require(plyr)
 require(httr)
 require(rjson)
 
-###################### private KEYS
+###################### private KEYS, need to be added
 
-visionKey = '691bba9faa9b48fb8451e7fd862fe1ce'
-faceKEY = 'b3b9b2c4953146f6a42ac0936e9b15dd'
-emotionKey = '287a9e58185b44cd86642a76c04acce0'
-videoKey = "d36b13c431ef45588f53bcbee3bef377"
+visionKey = ''
+faceKEY = ''
+emotionKey = ''
+videoKey = ""
 
 ############################################ helper!
 dataframeFromJSON <- function(l) {
