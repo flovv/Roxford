@@ -43,7 +43,7 @@ dataframeFromJSON <- function(l) {
 #' @param path to local image
 #' @param key to vision api 
 #' @param language settings default is DE
-
+#' @export
 #' @return data frame of text blocks
 #' @examples getOCRResponse("out/snap00169.png", visionKey)
 
@@ -76,7 +76,7 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
 #' @param path to local image
 #' @param key for the face api 
 
-
+#' @export
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponse("out/snap00169.png", facekey)
 #' 
@@ -110,7 +110,7 @@ getFaceResponse <- function(img.path, key){
 #' @param url to image
 #' @param key for the face api 
 
-
+#' @export
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #' 
@@ -140,7 +140,7 @@ getFaceResponseURL <- function(img.url, key){
 #' @param path to local image
 #' @param key for the vision api 
 
-
+#' @export
 #' @return data frame with image attributes
 #' @examples getVisionResponse("out/snap00169.png", facekey)
 #'
@@ -175,7 +175,7 @@ getVisionResponse <- function(img.path, key){
 #' @param url to image
 #' @param key for the vision api 
 
-
+#' @export
 #' @return data frame with image attributes
 #' @examples getVisionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #'
@@ -209,7 +209,7 @@ getVisionResponseURL <- function(img.url, key){
 #' @param path to local image
 #' @param key for the emotion api  
 
-
+#' @export
 #' @return data frame with emotion scores
 #' @examples getEmotionResponse("out/snap00169.png", emotionkey)
 #'
@@ -238,7 +238,7 @@ getEmotionResponse <- function(img.path, key){
 #' @param url to image
 #' @param key for the emotion api  
 
-
+#' @export
 #' @return data frame with emotion scores
 #' @examples getEmotionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", emotionKey)
 #'
@@ -270,7 +270,7 @@ getEmotionResponseURL <- function(img.url, key){
 #' @param path to local video
 #' @param key for the video api 
 
-
+#' @export
 #' @return data frame with video results
 #' @examples getVideoResponse("video.mp4", videoKey)
 #'
@@ -294,7 +294,7 @@ getVideoResultResponse <- function(operationURL, key){
 #' @param path to local video
 #' @param key for the video api 
 
-
+#' @export
 #' @return data frame with video results
 #' @examples getVideoResponse("video.mp4", videoKey)
 #'
@@ -334,7 +334,7 @@ getVideoResponse <- function(video.path, key){
 #' @param path to local video
 #' @param key for the video api 
 
-
+#' @export
 #' @return data frame with video motion results
 #' @examples getVideoMotion("video.mp4", videoKey)
 #'
