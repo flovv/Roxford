@@ -2,9 +2,7 @@
 ############# Mircosoft Image recognition API - LIB!
 
 ##########################################################
-require(plyr)
-require(httr)
-require(rjson)
+
 ################################################################
 
 ###################### private KEYS
@@ -13,6 +11,25 @@ visionKey = ''
 faceKEY = ''
 emotionKey = ''
 videoKey = ""
+
+############################################################
+#' @title helper function to load required packages
+#' @description Thanks to http://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+#'
+#' @param non
+
+#' @return non
+
+checkAndLoadPackages <- function(){
+  list.of.packages <- c("plyr", "httr", "rjson")
+  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  if(length(new.packages)) install.packages(new.packages)
+  
+  require(plyr)
+  require(httr)
+  require(rjson)
+}
+
 
 ############################################################
 #' @title helper function fto parse the json results to data frames 
@@ -49,6 +66,7 @@ dataframeFromJSON <- function(l) {
 
 getOCRResponse <- function(img.path, visionKey, language="de"){
   ##de  en
+  checkAndLoadPackages()
   faceURL = paste0("https://api.projectoxford.ai/vision/v1/ocr?detectOrientation=true&language=",language)
   
   mybody = upload_file(img.path)
@@ -81,7 +99,7 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
 #' @examples getFaceResponse("out/snap00169.png", facekey)
 #' 
 getFaceResponse <- function(img.path, key){
-  
+  checkAndLoadPackages()
   faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
   
   mybody = upload_file(img.path)
@@ -115,7 +133,7 @@ getFaceResponse <- function(img.path, key){
 #' @examples getFaceResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #' 
 getFaceResponseURL <- function(img.url, key){
-  
+  checkAndLoadPackages()
   faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
   
   mybody = list(url = img.url)
@@ -145,7 +163,7 @@ getFaceResponseURL <- function(img.url, key){
 #' @examples getVisionResponse("out/snap00169.png", facekey)
 #'
 getVisionResponse <- function(img.path, key){
-  
+  checkAndLoadPackages()
   visionURL = "https://api.projectoxford.ai/vision/v1/analyses?visualFeatures=all"
   
   mybody = upload_file(img.path)
@@ -180,7 +198,7 @@ getVisionResponse <- function(img.path, key){
 #' @examples getVisionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #'
 getVisionResponseURL <- function(img.url, key){
-  
+  checkAndLoadPackages()
   visionURL = "https://api.projectoxford.ai/vision/v1/analyses?visualFeatures=all"
   
   mybody = list(url = img.url)
@@ -214,7 +232,7 @@ getVisionResponseURL <- function(img.url, key){
 #' @examples getEmotionResponse("out/snap00169.png", emotionkey)
 #'
 getEmotionResponse <- function(img.path, key){
-  
+  checkAndLoadPackages()
   emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
   
   mybody = upload_file(img.path)
@@ -243,7 +261,7 @@ getEmotionResponse <- function(img.path, key){
 #' @examples getEmotionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", emotionKey)
 #'
 getEmotionResponseURL <- function(img.url, key){
-  
+  checkAndLoadPackages()
   emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
   
   mybody = list(url = img.url)
@@ -275,7 +293,7 @@ getEmotionResponseURL <- function(img.url, key){
 #' @examples getVideoResponse("video.mp4", videoKey)
 #'
 getVideoResultResponse <- function(operationURL, key){
-  
+  checkAndLoadPackages()
   second <- GET(
     url=operationURL,
     content_type('application/json'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
@@ -299,7 +317,7 @@ getVideoResultResponse <- function(operationURL, key){
 #' @examples getVideoResponse("video.mp4", videoKey)
 #'
 getVideoResponse <- function(video.path, key){
-  
+  checkAndLoadPackages()
   videoURL = "https://api.projectoxford.ai/video/v1.0/trackface"
   
   mybody = upload_file(video.path)
@@ -339,7 +357,7 @@ getVideoResponse <- function(video.path, key){
 #' @examples getVideoMotion("video.mp4", videoKey)
 #'
 getVideoMotion <- function(video.path, key){
-  
+  checkAndLoadPackages()
   videoMotionURL = "https://api.projectoxford.ai/video/v1.0/detectmotion"
   
   mybody = upload_file(video.path)
