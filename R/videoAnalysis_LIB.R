@@ -212,12 +212,12 @@ getVisionResponseURL <- function(img.url, key){
   
   con <- content(visionResponse)
   
-  df <- data.frame(t(unlist(con$categories)))
-  df2 <- data.frame(t(unlist(con$color)))
+ # df <- data.frame(t(unlist(con$categories)))
+ # df2 <- data.frame(t(unlist(con$color)))
   
   better <- dataframeFromJSON(content(visionResponse))
   
-  return(cbind(df,df2))
+  return(better)
 }
 #########################################################################
 ############################################################
