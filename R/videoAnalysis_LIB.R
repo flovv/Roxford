@@ -157,17 +157,26 @@ getFaceResponseURL <- function(img.url, key){
 #'
 #' @param path to local image
 #' @param key for the vision api 
+#' @param Categories - categorizes image content according to a taxonomy defined in documentation. Tags - tags the image with a detailed list of words related to the image content. Description - describes the image content with a complete English sentence. Faces - detects if faces are present. If present, generate coordinates, gender and age. ImageType - detects if image is clipart or a line drawing. Color - determines the accent color, dominant color, and whether an image is black&white. Adult - detects if the image is pornographic in nature (depicts nudity or a sex act). Sexually suggestive content is also detected.
 
 #' @export
 #' @return data frame with image attributes
 #' @examples getVisionResponse("out/snap00169.png", facekey)
 #'
-getVisionResponse <- function(img.path, key){
+getVisionResponse <- function(img.path, key, visualFeature="Tags"){
   checkAndLoadPackages()
-  visionURL = "https://api.projectoxford.ai/vision/v1/analyses?visualFeatures=all"
   
-  mybody = upload_file(img.path)
   
+  if(!visualFeature %in% c("Categories", "Tags", "Description", "Faces", "ImageType", "Color", "Adult") ){
+    print("please set visualFeature to one out of: 'Categories', 'Tags', 'Description', 'Faces', 'ImageType', 'Color', 'Adult' " )
+    visualFeature = "Categories"
+  }
+  
+  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
+  
+  mybody =  upload_file(img.path) 
+
+
   visionResponse = POST(
     url = visionURL, 
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
@@ -177,12 +186,12 @@ getVisionResponse <- function(img.path, key){
   
   con <- content(visionResponse)
   
- # df <- data.frame(t(unlist(con$categories)))
- # df2 <- data.frame(t(unlist(con$color)))
+  #df <- data.frame(t(unlist(con$categories)))
+  #df2 <- data.frame(t(unlist(con$color)))
   
   better <- dataframeFromJSON(content(visionResponse))
   
-  return(cbind(df,df2))
+  return(better)
 }
 
 ########################################################################## 
@@ -197,11 +206,17 @@ getVisionResponse <- function(img.path, key){
 #' @return data frame with image attributes
 #' @examples getVisionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #'
-getVisionResponseURL <- function(img.url, key){
+getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
   checkAndLoadPackages()
-  visionURL = "https://api.projectoxford.ai/vision/v1/analyses?visualFeatures=all"
+
+  if(!visualFeature %in% c("Categories", "Tags", "Description", "Faces", "ImageType", "Color", "Adult") ){
+    print("please set visualFeature to one out of: 'Categories', 'Tags', 'Description', 'Faces', 'ImageType', 'Color', 'Adult' " )
+    visualFeature = "Categories"
+  }
   
-  mybody = list(url = img.url)
+  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
+  
+  mybody = list(visualFeatures = visualFeature, url = img.url)
   
   visionResponse = POST(
     url = visionURL, 
@@ -211,13 +226,14 @@ getVisionResponseURL <- function(img.url, key){
   )
   
   con <- content(visionResponse)
+ 
   
-  df <- data.frame(t(unlist(con$categories)))
-  df2 <- data.frame(t(unlist(con$color)))
+  #df <- data.frame(t(unlist(con$categories)))
+  # df2 <- data.frame(t(unlist(con$color)))
   
   better <- dataframeFromJSON(content(visionResponse))
   
-  return(cbind(df,df2))
+  return(better)
 }
 #########################################################################
 ############################################################
