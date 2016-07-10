@@ -227,9 +227,7 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
   
   con <- content(visionResponse)
  
-  
-  #df <- data.frame(t(unlist(con$categories)))
-  # df2 <- data.frame(t(unlist(con$color)))
+
   
   better <- dataframeFromJSON(content(visionResponse))
   
