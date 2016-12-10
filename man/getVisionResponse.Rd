@@ -4,12 +4,14 @@
 \alias{getVisionResponse}
 \title{image recognition and object identification}
 \usage{
-getVisionResponse(img.path, key)
+getVisionResponse(img.path, key, visualFeature = "Tags")
 }
 \arguments{
 \item{key}{for the vision api}
 
 \item{path}{to local image}
+
+\item{Categories}{- categorizes image content according to a taxonomy defined in documentation. Tags - tags the image with a detailed list of words related to the image content. Description - describes the image content with a complete English sentence. Faces - detects if faces are present. If present, generate coordinates, gender and age. ImageType - detects if image is clipart or a line drawing. Color - determines the accent color, dominant color, and whether an image is black&white. Adult - detects if the image is pornographic in nature (depicts nudity or a sex act). Sexually suggestive content is also detected.}
 }
 \value{
 data frame with image attributes

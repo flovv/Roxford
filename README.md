@@ -1,5 +1,6 @@
 # Roxford
-R Package for Image Recogntion using the Project Oxford API
+R Package for Image Recogntion using the Microsoft's Cognitive Services API.
+Microsoft's Cognitive Services were previously named "Project Oxford" 
 
 See the the R/shiny [demo](https://flovv.shinyapps.io/image-shiny)
 
@@ -51,5 +52,22 @@ getVisionResponse("out/snap00169.png", visionkey)
 getVisionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionkey)
 
 ```
+
+### Image labeling, tagging and description
+```
+visionkey = '' # different key
+getDescriptionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionkey)
+
+getTaggingResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionkey)
+
+getTaggingResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionkey)
+
+## can  be used to classify with domain specific models provided by Microsoft.
+# run  getDomainModels(visionkey) first to get a list with available models
+getDomainModelResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionkey, 'celebreties')
+```
+
+There are always to function to access one API endpoint.
+xyzURL(url,...) to provide a url as a string and just xyz(localImage,...) to provide a string to a local image.
 
 

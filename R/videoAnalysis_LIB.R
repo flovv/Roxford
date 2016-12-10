@@ -24,7 +24,7 @@ checkAndLoadPackages <- function(){
   list.of.packages <- c("plyr", "httr", "rjson")
   new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
   if(length(new.packages)) install.packages(new.packages)
-  
+
   require(plyr)
   require(httr)
   require(rjson)
@@ -32,7 +32,7 @@ checkAndLoadPackages <- function(){
 
 
 ############################################################
-#' @title helper function fto parse the json results to data frames 
+#' @title helper function fto parse the json results to data frames
 #' @description  Microsoft  API returns (well-)structured JSON, this function parses it into data frames
 #'
 #' @param json text
@@ -58,7 +58,7 @@ dataframeFromJSON <- function(l) {
 #' @description upload image, get text back!
 #'
 #' @param path to local image
-#' @param key to vision api 
+#' @param key to vision api
 #' @param language settings default is DE
 #' @export
 #' @return data frame of text blocks
@@ -68,16 +68,16 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
   ##de  en
   checkAndLoadPackages()
   faceURL = paste0("https://api.projectoxford.ai/vision/v1/ocr?detectOrientation=true&language=",language)
-  
+
   mybody = upload_file(img.path)
-  
+
   ocrResponse = POST(
-    url = faceURL, 
+    url = faceURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = visionKey)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
   con <- content(ocrResponse)
   regions <- con$regions
 
@@ -92,33 +92,33 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
 #' @description upload image, get text back!
 #'
 #' @param path to local image
-#' @param key for the face api 
+#' @param key for the face api
 
 #' @export
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponse("out/snap00169.png", facekey)
-#' 
+#'
 getFaceResponse <- function(img.path, key){
   checkAndLoadPackages()
   faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
-  
+
   mybody = upload_file(img.path)
-  
+
   faceResponse = POST(
-    url = faceURL, 
+    url = faceURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
  # con <- content(faceResponse)[[1]]
 #  df <- data.frame(t(unlist(con$faceAttributes)))
-  
+
   better <- dataframeFromJSON(content(faceResponse))
   # cn <- c("faceAttributes.smile", "faceAttributes.gender", "faceAttributes.age", "faceAttributes.facialHair.moustache", "faceAttributes.facialHair.beard", "faceAttributes.facialHair.sideburns")
   df <-   better
-  
-  return(df) 
+
+  return(df)
 }
 ## URL based!
 ############################################################
@@ -126,37 +126,37 @@ getFaceResponse <- function(img.path, key){
 #' @description url to image, get text back!
 #'
 #' @param url to image
-#' @param key for the face api 
+#' @param key for the face api
 
 #' @export
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
-#' 
+#'
 getFaceResponseURL <- function(img.url, key){
   checkAndLoadPackages()
   faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
-  
+
   mybody = list(url = img.url)
-  
+
   faceResponse = POST(
-    url = faceURL, 
+    url = faceURL,
     content_type('application/json'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'json'
   )
-  
+
   #con <- content(faceResponse)[[1]]
   df <- dataframeFromJSON(content(faceResponse))
 
-  return(df) 
+  return(df)
 }
-##########################################################################  
+##########################################################################
 ############################################################
-#' @title image recognition and object identification 
+#' @title image recognition and object identification
 #' @description upload image, a description of the image back
 #'
 #' @param path to local image
-#' @param key for the vision api 
+#' @param key for the vision api
 #' @param Categories - categorizes image content according to a taxonomy defined in documentation. Tags - tags the image with a detailed list of words related to the image content. Description - describes the image content with a complete English sentence. Faces - detects if faces are present. If present, generate coordinates, gender and age. ImageType - detects if image is clipart or a line drawing. Color - determines the accent color, dominant color, and whether an image is black&white. Adult - detects if the image is pornographic in nature (depicts nudity or a sex act). Sexually suggestive content is also detected.
 
 #' @export
@@ -165,42 +165,42 @@ getFaceResponseURL <- function(img.url, key){
 #'
 getVisionResponse <- function(img.path, key, visualFeature="Tags"){
   checkAndLoadPackages()
-  
-  
+
+
   if(!visualFeature %in% c("Categories", "Tags", "Description", "Faces", "ImageType", "Color", "Adult") ){
     print("please set visualFeature to one out of: 'Categories', 'Tags', 'Description', 'Faces', 'ImageType', 'Color', 'Adult' " )
     visualFeature = "Categories"
   }
-  
+
   visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
-  
-  mybody =  upload_file(img.path) 
+
+  mybody =  upload_file(img.path)
 
 
   visionResponse = POST(
-    url = visionURL, 
+    url = visionURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
   con <- content(visionResponse)
-  
+
   #df <- data.frame(t(unlist(con$categories)))
   #df2 <- data.frame(t(unlist(con$color)))
-  
+
   better <- dataframeFromJSON(content(visionResponse))
-  
+
   return(better)
 }
 
-########################################################################## 
+##########################################################################
 # URL based
-#' @title image recognition and object identification 
+#' @title image recognition and object identification
 #' @description provide url to image, a description of the image back
 #'
 #' @param url to image
-#' @param key for the vision api 
+#' @param key for the vision api
 
 #' @export
 #' @return data frame with image attributes
@@ -213,24 +213,24 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
     print("please set visualFeature to one out of: 'Categories', 'Tags', 'Description', 'Faces', 'ImageType', 'Color', 'Adult' " )
     visualFeature = "Categories"
   }
-  
+
   visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
-  
+
   mybody = list(visualFeatures = visualFeature, url = img.url)
-  
+
   visionResponse = POST(
-    url = visionURL, 
+    url = visionURL,
     content_type('application/json'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'json'
   )
-  
-  con <- content(visionResponse)
- 
 
-  
+  con <- content(visionResponse)
+
+
+
   better <- dataframeFromJSON(content(visionResponse))
-  
+
   return(better)
 }
 #########################################################################
@@ -239,7 +239,7 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
 #' @description upload image, get emotion scores back for each face.
 #'
 #' @param path to local image
-#' @param key for the emotion api  
+#' @param key for the emotion api
 
 #' @export
 #' @return data frame with emotion scores
@@ -248,18 +248,18 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
 getEmotionResponse <- function(img.path, key){
   checkAndLoadPackages()
   emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
-  
+
   mybody = upload_file(img.path)
-  
+
   emotionResponse = POST(
-    url = emotionURL, 
+    url = emotionURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
   df <- dataframeFromJSON(content(emotionResponse))
-  
+
   return(df)
 }
 ## URL based!
@@ -268,7 +268,7 @@ getEmotionResponse <- function(img.path, key){
 #' @description provide an url to an image, get emotion scores back for each face.
 #'
 #' @param url to image
-#' @param key for the emotion api  
+#' @param key for the emotion api
 
 #' @export
 #' @return data frame with emotion scores
@@ -277,18 +277,18 @@ getEmotionResponse <- function(img.path, key){
 getEmotionResponseURL <- function(img.url, key){
   checkAndLoadPackages()
   emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
-  
+
   mybody = list(url = img.url)
-  
+
   emotionResponse = POST(
-    url = emotionURL, 
+    url = emotionURL,
     content_type('application/json'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'json'
   )
-  
+
   df <- dataframeFromJSON(content(emotionResponse))
-  
+
   return(df)
 }
 ####################################################################################
@@ -300,7 +300,7 @@ getEmotionResponseURL <- function(img.url, key){
 #' @description  the Video API needs two calls, one to upload the video, a second to get the results after processing, this is the second call.
 #'
 #' @param path to local video
-#' @param key for the video api 
+#' @param key for the video api
 
 #' @export
 #' @return data frame with video results
@@ -313,7 +313,7 @@ getVideoResultResponse <- function(operationURL, key){
     content_type('application/json'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     encode = 'json'
   )
-  
+
   return(content(second))
 }
 
@@ -324,7 +324,7 @@ getVideoResultResponse <- function(operationURL, key){
 #' @description  might take a while
 #'
 #' @param path to local video
-#' @param key for the video api 
+#' @param key for the video api
 
 #' @export
 #' @return data frame with video results
@@ -333,26 +333,26 @@ getVideoResultResponse <- function(operationURL, key){
 getVideoResponse <- function(video.path, key){
   checkAndLoadPackages()
   videoURL = "https://api.projectoxford.ai/video/v1.0/trackface"
-  
+
   mybody = upload_file(video.path)
-  
+
   videoResponse = POST(
-    url = videoURL, 
+    url = videoURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = key)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
   operationURL <- videoResponse$headers$`operation-location`
   ### second call!
- 
+
   while(con$status == "Running"){
     print("Waiting for a result ... ")
     Sys.sleep(4)
     con <- getVideoResultResponse(operationURL, key)
-    
+
   }
-  
+
   o <- fromJSON(con$processingResult, method='C')
   return(o)
 }
@@ -364,7 +364,7 @@ getVideoResponse <- function(video.path, key){
 #' @description  might take a while
 #'
 #' @param path to local video
-#' @param key for the video api 
+#' @param key for the video api
 
 #' @export
 #' @return data frame with video motion results
@@ -373,31 +373,30 @@ getVideoResponse <- function(video.path, key){
 getVideoMotion <- function(video.path, key){
   checkAndLoadPackages()
   videoMotionURL = "https://api.projectoxford.ai/video/v1.0/detectmotion"
-  
+
   mybody = upload_file(video.path)
-  
+
   motionResponse = POST(
-    url = videoMotionURL, 
+    url = videoMotionURL,
     content_type('application/octet-stream'), add_headers(.headers = c('Ocp-Apim-Subscription-Key' = videoKey)),
     body = mybody,
     encode = 'multipart'
   )
-  
+
   operationURL <- motionResponse$headers$`operation-location`
-  
+
   while(con$status == "Running"){
     print("Waiting for a result ... ")
     Sys.sleep(4)
     con <- getVideoResultResponse(operationURL, key)
-    
+
   }
-  
+
   o <- fromJSON(con$processingResult, method='C')
   return(o)
 }
 
 ###########################################################################
-
 
 
 

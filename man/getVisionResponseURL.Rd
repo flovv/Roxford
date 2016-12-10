@@ -4,7 +4,7 @@
 \alias{getVisionResponseURL}
 \title{image recognition and object identification}
 \usage{
-getVisionResponseURL(img.url, key)
+getVisionResponseURL(img.url, key, visualFeature = "Tags")
 }
 \arguments{
 \item{key}{for the vision api}
