@@ -30,7 +30,7 @@ getDescriptionResponseURL <- function(img.url, key, maxCandidates=3){
     encode = 'json'
   )
 
-  con <- content(visionResponse)
+  #con <- content(visionResponse)
 
   better <- dataframeFromJSON(content(visionResponse))
 
@@ -63,7 +63,7 @@ getDescriptionResponse <- function(img.path, key, maxCandidates=3){
     encode = 'json'
   )
 
-  con <- content(visionResponse)
+  #con <- content(visionResponse)
 
   better <- dataframeFromJSON(content(visionResponse))
 
