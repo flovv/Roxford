@@ -145,6 +145,7 @@ getTaggingResponse <- function(img.path, key){
 #'
 ###
 getDomainModels <- function(key){
+  checkAndLoadPackages()
   visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/models")
 
   visionResponse = GET(
