@@ -6,6 +6,9 @@ See the the R/shiny [demo](https://flovv.shinyapps.io/image-shiny)
 
 and [blog post](http://flovv.github.io/Image-Recognition/)
 
+Microsoft changed their API and API key structure. 
+Please let me know if parts of the package do not work anymore.
+
 ## Install
 ```
 #install.packages("devtools")
