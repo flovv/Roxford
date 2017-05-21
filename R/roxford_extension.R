@@ -16,11 +16,13 @@
 #' @return data frame with image description
 #' @examples getDescriptionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionKey)
 #'
-getDescriptionResponseURL <- function(img.url, key, maxCandidates=3){
+getDescriptionResponseURL <- function(img.url, key, maxCandidates=3, region="westus"){
   checkAndLoadPackages()
-
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/describe?maxCandidates=",maxCandidates)
-
+  #.api.cognitive.microsoft.com/vision/v1.0/describe[?maxCandidates]
+  #visionURL = "https://westeurope.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Categories&details={string}&language=en"
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/describe?maxCandidates=",maxCandidates)
+  
+  
   mybody = list(maxCandidates = maxCandidates, url = img.url)
 
   visionResponse = POST(
@@ -31,6 +33,7 @@ getDescriptionResponseURL <- function(img.url, key, maxCandidates=3){
   )
 
   #con <- content(visionResponse)
+  checkForError(visionResponse)
 
   better <- dataframeFromJSON(content(visionResponse))
 
@@ -49,10 +52,10 @@ getDescriptionResponseURL <- function(img.url, key, maxCandidates=3){
 #' @return data frame with image description
 #' @examples getDescriptionResponse('out/snap00169.png', visionKey, maxCandidates)
 #'
-getDescriptionResponse <- function(img.path, key, maxCandidates=3){
+getDescriptionResponse <- function(img.path, key, maxCandidates=3, region="westus"){
   checkAndLoadPackages()
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/describe?maxCandidates=",maxCandidates)
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/describe?maxCandidates=",maxCandidates)
 
   mybody = upload_file(img.path)
 
@@ -64,6 +67,7 @@ getDescriptionResponse <- function(img.path, key, maxCandidates=3){
   )
 
   #con <- content(visionResponse)
+  checkForError(visionResponse)
 
   better <- dataframeFromJSON(content(visionResponse))
 
@@ -84,10 +88,10 @@ getDescriptionResponse <- function(img.path, key, maxCandidates=3){
 #' @return data frame with image description
 #' @examples getTaggingResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", visionKey)
 #'
-getTaggingResponseURL <- function(img.url, key){
+getTaggingResponseURL <- function(img.url, key, region="westus"){
   checkAndLoadPackages()
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/tag")
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/tag")
 
   mybody = list(url = img.url)
 
@@ -98,6 +102,8 @@ getTaggingResponseURL <- function(img.url, key){
     encode = 'json'
   )
 
+  checkForError(visionResponse)
+  
   #con <- content(visionResponse)
   better <- dataframeFromJSON(content(visionResponse))
   return(better)
@@ -113,10 +119,10 @@ getTaggingResponseURL <- function(img.url, key){
 #' @return data frame with image description
 #' @examples getTaggingResponseURL("out/image.png", visionKey)
 #'
-getTaggingResponse <- function(img.path, key){
+getTaggingResponse <- function(img.path, key, region="westus"){
   checkAndLoadPackages()
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/tag")
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/tag")
 
   mybody = upload_file(img.path)
 
@@ -127,6 +133,8 @@ getTaggingResponse <- function(img.path, key){
     encode = 'json'
   )
 
+  checkForError(visionResponse)
+  
   #con <- content(visionResponse)
   better <- dataframeFromJSON(content(visionResponse))
   return(better)
@@ -144,9 +152,9 @@ getTaggingResponse <- function(img.path, key){
 #' @examples getDomainModels(visionKey)
 #'
 ###
-getDomainModels <- function(key){
+getDomainModels <- function(key, region="westus"){
   checkAndLoadPackages()
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/models")
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/models")
 
   visionResponse = GET(
     url = visionURL,
@@ -154,6 +162,8 @@ getDomainModels <- function(key){
     encode = 'json'
   )
 
+  checkForError(visionResponse)
+  
   #con <- content(visionResponse)
   better <- dataframeFromJSON(content(visionResponse))
   return(better)
@@ -174,10 +184,10 @@ getDomainModels <- function(key){
 #' @examples getDomainModelResponseURL(img.url, visionKey, model)
 #'
 ###
-getDomainModelResponseURL <- function(img.url, key, model="celebrities"){
+getDomainModelResponseURL <- function(img.url, key, model="celebrities", region="westus"){
   checkAndLoadPackages()
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/models/",model,"/analyze")
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/models/",model,"/analyze")
 
   mybody = list(url = img.url)
 
@@ -187,6 +197,8 @@ getDomainModelResponseURL <- function(img.url, key, model="celebrities"){
     body = mybody,
     encode = 'json'
   )
+  
+  checkForError(visionResponse)
 
   #con <- content(visionResponse)
   better <- dataframeFromJSON(content(visionResponse))
@@ -206,10 +218,10 @@ getDomainModelResponseURL <- function(img.url, key, model="celebrities"){
 #' @examples getDomainModelResponseURL("out/image.png", visionKey, model)
 #'
 ###
-getDomainModelResponse <- function(img.path, key, model="celebrities"){
+getDomainModelResponse <- function(img.path, key, model="celebrities",region="westus"){
   checkAndLoadPackages()
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/models/",model,"/analyze")
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/models/",model,"/analyze")
 
   mybody = upload_file(img.path)
 
@@ -220,6 +232,9 @@ getDomainModelResponse <- function(img.path, key, model="celebrities"){
     encode = 'json'
   )
 
+
+  checkForError(visionResponse)
+  
   #con <- content(visionResponse)
   better <- dataframeFromJSON(content(visionResponse))
   return(better)

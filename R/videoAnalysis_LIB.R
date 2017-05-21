@@ -30,6 +30,49 @@ checkAndLoadPackages <- function(){
   require(rjson)
 }
 
+############################################################
+#' @title helper function set the right BASE API URL
+#' @description Microsoft changed their URL recently, makes it more flexible to adapt future changes
+#'
+#' @param Region; westus, eastus2, westcentralus, westeurope, southeastasia
+
+#' @return BASE URL
+
+getBaseURL <- function(region ="westus"){
+
+  # West US - westus.api.cognitive.microsoft.com
+  # East US 2 - eastus2.api.cognitive.microsoft.com
+  # West Central US - westcentralus.api.cognitive.microsoft.com
+  # West Europe - westeurope.api.cognitive.microsoft.com
+  # Southeast Asia - southeastasia.api.cognitive.microsoft.com
+  
+  if(region %in% c("westus", "eastus2", "westcentralus", "westeurope", "southeastasia")){
+    baseURL <- paste0("https://", region, ".api.cognitive.microsoft.com/")
+  }
+  else{
+    baseURL = "https://westus.api.cognitive.microsoft.com"
+    message("defaulting back to WestUS API")
+  }
+  return(baseURL)
+}
+
+############################################################
+#' @title helper function print out errors and messages
+#' @description  ... helps to understand why stuff does not work!
+#'
+#' @param APIresponse
+
+#' @return none
+
+checkForError <- function(visionResponse){
+
+  if(visionResponse$status_code > 300){
+    message(visionResponse)
+  }
+  
+}
+
+
 
 ############################################################
 #' @title helper function fto parse the json results to data frames
@@ -64,10 +107,10 @@ dataframeFromJSON <- function(l) {
 #' @return data frame of text blocks
 #' @examples getOCRResponse("out/snap00169.png", visionKey)
 
-getOCRResponse <- function(img.path, visionKey, language="de"){
+getOCRResponse <- function(img.path, visionKey, language="de", region="westus"){
   ##de  en
   checkAndLoadPackages()
-  faceURL = paste0("https://api.projectoxford.ai/vision/v1/ocr?detectOrientation=true&language=",language)
+  faceURL = paste0(getBaseURL(region),"vision/v1/ocr?detectOrientation=true&language=",language)
 
   mybody = upload_file(img.path)
 
@@ -78,6 +121,8 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
     encode = 'multipart'
   )
 
+  checkForError(ocrResponse)
+  
   con <- content(ocrResponse)
   regions <- con$regions
 
@@ -98,9 +143,9 @@ getOCRResponse <- function(img.path, visionKey, language="de"){
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponse("out/snap00169.png", facekey)
 #'
-getFaceResponse <- function(img.path, key){
+getFaceResponse <- function(img.path, key, region="westus"){
   checkAndLoadPackages()
-  faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
+  faceURL = paste0(getBaseURL(region),"face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose")
 
   mybody = upload_file(img.path)
 
@@ -111,6 +156,8 @@ getFaceResponse <- function(img.path, key){
     encode = 'multipart'
   )
 
+  checkForError(faceResponse)
+  
  # con <- content(faceResponse)[[1]]
 #  df <- data.frame(t(unlist(con$faceAttributes)))
 
@@ -132,9 +179,9 @@ getFaceResponse <- function(img.path, key){
 #' @return data frame with face attributes, age, gender, faceid
 #' @examples getFaceResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #'
-getFaceResponseURL <- function(img.url, key){
+getFaceResponseURL <- function(img.url, key, region="westus"){
   checkAndLoadPackages()
-  faceURL = "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose"
+  faceURL = paste0(getBaseURL(region),"face/v1.0/detect?returnFaceId=true&returnFaceAttributes=age,gender,smile,facialHair,headPose")
 
   mybody = list(url = img.url)
 
@@ -144,7 +191,7 @@ getFaceResponseURL <- function(img.url, key){
     body = mybody,
     encode = 'json'
   )
-
+  checkForError(faceResponse)
   #con <- content(faceResponse)[[1]]
   df <- dataframeFromJSON(content(faceResponse))
 
@@ -163,7 +210,7 @@ getFaceResponseURL <- function(img.url, key){
 #' @return data frame with image attributes
 #' @examples getVisionResponse("out/snap00169.png", facekey)
 #'
-getVisionResponse <- function(img.path, key, visualFeature="Tags"){
+getVisionResponse <- function(img.path, key, visualFeature="Tags", region="westus"){
   checkAndLoadPackages()
 
 
@@ -172,7 +219,7 @@ getVisionResponse <- function(img.path, key, visualFeature="Tags"){
     visualFeature = "Categories"
   }
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/analyze?visualFeatures=",visualFeature)
 
   mybody =  upload_file(img.path)
 
@@ -184,7 +231,9 @@ getVisionResponse <- function(img.path, key, visualFeature="Tags"){
     encode = 'multipart'
   )
 
-  con <- content(visionResponse)
+  checkForError(visionResponse)
+  
+  #con <- content(visionResponse)
 
   #df <- data.frame(t(unlist(con$categories)))
   #df2 <- data.frame(t(unlist(con$color)))
@@ -206,7 +255,7 @@ getVisionResponse <- function(img.path, key, visualFeature="Tags"){
 #' @return data frame with image attributes
 #' @examples getVisionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", facekey)
 #'
-getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
+getVisionResponseURL <- function(img.url, key, visualFeature="Adult", region="westus"){
   checkAndLoadPackages()
 
   if(!visualFeature %in% c("Categories", "Tags", "Description", "Faces", "ImageType", "Color", "Adult") ){
@@ -214,7 +263,7 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
     visualFeature = "Categories"
   }
 
-  visionURL = paste0("https://api.projectoxford.ai/vision/v1.0/analyze?visualFeatures=",visualFeature)
+  visionURL = paste0(getBaseURL(region),"vision/v1.0/analyze?visualFeatures=",visualFeature)
 
   mybody = list(visualFeatures = visualFeature, url = img.url)
 
@@ -225,10 +274,10 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
     encode = 'json'
   )
 
-  con <- content(visionResponse)
-
-
-
+  
+ # con <- content(visionResponse)
+  checkForError(visionResponse)
+  
   better <- dataframeFromJSON(content(visionResponse))
 
   return(better)
@@ -245,9 +294,9 @@ getVisionResponseURL <- function(img.url, key, visualFeature="Tags"){
 #' @return data frame with emotion scores
 #' @examples getEmotionResponse("out/snap00169.png", emotionkey)
 #'
-getEmotionResponse <- function(img.path, key){
+getEmotionResponse <- function(img.path, key,region="westus"){
   checkAndLoadPackages()
-  emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
+  emotionURL = paste0(getBaseURL(region),"/emotion/v1.0/recognize")
 
   mybody = upload_file(img.path)
 
@@ -258,6 +307,8 @@ getEmotionResponse <- function(img.path, key){
     encode = 'multipart'
   )
 
+  checkForError(emotionResponse)
+  
   df <- dataframeFromJSON(content(emotionResponse))
 
   return(df)
@@ -274,10 +325,9 @@ getEmotionResponse <- function(img.path, key){
 #' @return data frame with emotion scores
 #' @examples getEmotionResponseURL("http://sizlingpeople.com/wp-content/uploads/2015/10/Kim-Kardashian-2015-21.jpg", emotionKey)
 #'
-getEmotionResponseURL <- function(img.url, key){
+getEmotionResponseURL <- function(img.url, key, region="westus"){
   checkAndLoadPackages()
-  emotionURL = "https://api.projectoxford.ai/emotion/v1.0/recognize"
-
+  emotionURL = paste0(getBaseURL(region),"/emotion/v1.0/recognize")
   mybody = list(url = img.url)
 
   emotionResponse = POST(
@@ -286,6 +336,7 @@ getEmotionResponseURL <- function(img.url, key){
     body = mybody,
     encode = 'json'
   )
+  checkForError(emotionResponse)
 
   df <- dataframeFromJSON(content(emotionResponse))
 
@@ -330,9 +381,9 @@ getVideoResultResponse <- function(operationURL, key){
 #' @return data frame with video results
 #' @examples getVideoResponse("video.mp4", videoKey)
 #'
-getVideoResponse <- function(video.path, key){
+getVideoResponse <- function(video.path, key, region="westus"){
   checkAndLoadPackages()
-  videoURL = "https://api.projectoxford.ai/video/v1.0/trackface"
+  videoURL = paste0(getBaseURL(region),"/video/v1.0/trackface")
 
   mybody = upload_file(video.path)
 
@@ -343,6 +394,8 @@ getVideoResponse <- function(video.path, key){
     encode = 'multipart'
   )
 
+  checkForError(videoResponse)
+  
   operationURL <- videoResponse$headers$`operation-location`
   ### second call!
 
@@ -370,9 +423,9 @@ getVideoResponse <- function(video.path, key){
 #' @return data frame with video motion results
 #' @examples getVideoMotion("video.mp4", videoKey)
 #'
-getVideoMotion <- function(video.path, key){
+getVideoMotion <- function(video.path, key, region="westus"){
   checkAndLoadPackages()
-  videoMotionURL = "https://api.projectoxford.ai/video/v1.0/detectmotion"
+  videoMotionURL = paste0(getBaseURL(region),"video/v1.0/detectmotion")
 
   mybody = upload_file(video.path)
 
@@ -383,6 +436,7 @@ getVideoMotion <- function(video.path, key){
     encode = 'multipart'
   )
 
+  checkForError(motionResponse)
   operationURL <- motionResponse$headers$`operation-location`
 
   while(con$status == "Running"){
